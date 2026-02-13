@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philippine Health Laws Memory Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1a4d2e;
+            --secondary: #4f8a6d;
+            --accent: #f77f00;
+            --bg: #fefae0;
+            --surface: #ffffff;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --correct: #06a77d;
+            --incorrect: #d62828;
+            --warning: #fcbf49;
+            --border: #e5e5e5;
+            --shadow: rgba(26, 77, 46, 0.1);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fefae0 0%, #f4f1de 50%, #e8dcc4 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0 rgba(247, 127, 0, 0.1);
+        }
+        
+        .header .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .header .tip {
+            background: var(--warning);
+            color: var(--text);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(252, 191, 73, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px var(--shadow);
+            border: 2px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .progress-container {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            animation: fadeIn 0.8s ease 0.3s both;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-text {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .progress-percentage {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .progress-bar-bg {
+            background: var(--border);
+            height: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 10px rgba(26, 77, 46, 0.3);
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .quiz-card {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px var(--shadow);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease;
+            border: 3px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quiz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .question-number {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(26, 77, 46, 0.3);
+        }
+        
+        .question-type {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .type-badge {
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .option {
+            background: linear-gradient(135deg, #ffffff 0%, #fefae0 100%);
+            border: 3px solid var(--border);
+            border-radius: 18px;
+            padding: 1.3rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .option:hover:not(.disabled) {
+            border-color: var(--primary);
+            transform: translateX(8px);
+            box-shadow: 0 6px 25px var(--shadow);
+        }
+        
+        .option:hover:not(.disabled)::before {
+            transform: scaleY(1);
+        }
+        
+        .option-letter {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(26, 77, 46, 0.2);
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+        
+        .option.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: var(--primary);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: 0 8px 30px rgba(26, 77, 46, 0.3);
+        }
+        
+        .option.selected .option-letter {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .option.correct {
+            background: linear-gradient(135deg, var(--correct), #08d9a0);
+            border-color: var(--correct);
+            color: white;
+            animation: correctPulse 0.6s ease;
+        }
+        
+        .option.correct .option-letter {
+            background: white;
+            color: var(--correct);
+        }
+        
+        .option.incorrect {
+            background: linear-gradient(135deg, var(--incorrect), #ef233c);
+            border-color: var(--incorrect);
+            color: white;
+            animation: shake 0.5s ease;
+        }
+        
+        .option.incorrect .option-letter {
+            background: white;
+            color: var(--incorrect);
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .feedback {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 18px;
+            animation: fadeIn 0.4s ease;
+            border-left: 6px solid;
+        }
+        
+        .feedback.correct {
+            background: rgba(6, 167, 125, 0.1);
+            border-left-color: var(--correct);
+        }
+        
+        .feedback.incorrect {
+            background: rgba(214, 40, 40, 0.1);
+            border-left-color: var(--incorrect);
+        }
+        
+        .feedback-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feedback.correct .feedback-title {
+            color: var(--correct);
+        }
+        
+        .feedback.incorrect .feedback-title {
+            color: var(--incorrect);
+        }
+        
+        .feedback-explanation {
+            color: var(--text);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .memory-tip {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(247, 127, 0, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .memory-tip-title {
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .memory-tip-text {
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 1.1rem 2rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 77, 46, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #f08c00;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(247, 127, 0, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .results-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            color: white;
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 15px 50px var(--shadow);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .results-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .score-display {
+            font-size: 4rem;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .result-stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .result-stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+        
+        .mastery-level {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .mastery-level h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .mastery-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        
+        .mastery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06a77d, #08d9a0);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .quiz-card {
+                padding: 1.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .score-display {
+                font-size: 3rem;
+            }
+            
+            .results-card h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Philippine Health Laws Quiz</h1>
+            <p class="subtitle">Randomized Questions - No Patterns!</p>
+            <div class="tip">💡 Every question & answer is shuffled - truly test your knowledge!</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Laws</div>
+                <div class="stat-value" id="totalLaws">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Mastered</div>
+                <div class="stat-value" id="masteredCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Current Streak</div>
+                <div class="stat-value" id="streakCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value" id="accuracyPercent">0%</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <span class="progress-text" id="questionCounter">Question 1 of 100</span>
+                <span class="progress-percentage" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+        
+        <div id="quizContainer"></div>
+        <div id="resultsContainer" class="hidden"></div>
+    </div>
+    
+    <script>
+        // Shuffle function
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        const quizDataBase = [
+            // Different question types mixed randomly
+            {
+                question: "Which law provides hazard pay, subsistence allowance, and longevity pay to health workers?",
+                options: ["RA 7160", "RA 7305", "RA 7875", "RA 10121"],
+                correct: 1,
+                explanation: "RA 7305 (Magna Carta for Public Health Workers) provides these comprehensive benefits.",
+                memoryTip: "MAGNA = BIG benefits → 7305!",
+                category: "Health Worker Protection"
+            },
+            {
+                question: "What is RA 8749?",
+                options: ["Clean Air Act", "Clean Water Act", "Ecological Solid Waste Management Act", "Sanitation Code"],
+                correct: 0,
+                explanation: "RA 8749 is the Clean Air Act.",
+                memoryTip: "8749 → '87-49' → In '87, we wanted clean air for '49 (Philippines)!",
+                category: "Environmental Health"
+            },
+            {
+                question: "The Clean Air Act is:",
+                options: ["RA 9275", "RA 8749", "PD 856", "RA 9003"],
+                correct: 1,
+                explanation: "The Clean Air Act is RA 8749.",
+                memoryTip: "AIR = 8749!",
+                category: "Environmental Health"
+            },
+            {
+                question: "What does PD 856 govern?",
+                options: ["Air quality only", "Food sanitation, water supply, waste disposal, environmental sanitation, and public health safety", "Blood donation", "Drug prevention"],
+                correct: 1,
+                explanation: "PD 856 (Sanitation Code) governs these comprehensive public health measures.",
+                memoryTip: "Sanitation = FWWEP → Food, Water, Waste, Environmental, Public safety!",
+                category: "Environmental Health"
+            },
+            {
+                question: "Sanitation Code of the Philippines is:",
+                options: ["RA 8749", "RA 9003", "PD 856", "RA 9275"],
+                correct: 2,
+                explanation: "The Sanitation Code of the Philippines is PD 856.",
+                memoryTip: "Sanitation for eating = 8-5-6!",
+                category: "Environmental Health"
+            },
+            {
+                question: "What is PD 856?",
+                options: ["Clean Air Act", "Ecological Solid Waste Management Act", "Sanitation Code of the Philippines", "Clean Water Act"],
+                correct: 2,
+                explanation: "PD 856 is the Sanitation Code of the Philippines.",
+                memoryTip: "PD 856 → '8-5-6' = ATE-FIVE-SIX meals → Need SANITATION!",
+                category: "Environmental Health"
+            },
+            {
+                question: "The Generics Act is:",
+                options: ["RA 9502", "RA 6675", "RA 9994", "RA 11223"],
+                correct: 1,
+                explanation: "The Generics Act is RA 6675.",
+                memoryTip: "GENERICS = 6675!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "What is RA 6675?",
+                options: ["Cheaper Medicines Act", "Generics Act", "PhilHealth Act", "Senior Citizens Act"],
+                correct: 1,
+                explanation: "RA 6675 is the Generics Act.",
+                memoryTip: "6675 → '66-75' → Seniors need GENERIC meds!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "Which law mandates generic labeling, prescribing, and dispensing?",
+                options: ["RA 9502", "RA 6675", "RA 7875", "RA 11223"],
+                correct: 1,
+                explanation: "RA 6675 (Generics Act) mandates generic labeling, prescribing, and dispensing.",
+                memoryTip: "GENERICS = Get Every Need Easily → 6675!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "National Health Insurance Act is:",
+                options: ["RA 11223", "RA 7875", "RA 9994", "RA 10606"],
+                correct: 1,
+                explanation: "The National Health Insurance Act is RA 7875.",
+                memoryTip: "PhilHealth = 7875!",
+                category: "Health Insurance"
+            },
+            {
+                question: "What is RA 7875?",
+                options: ["Universal Health Care Act", "National Health Insurance Act", "Senior Citizens Act", "Generics Act"],
+                correct: 1,
+                explanation: "RA 7875 is the National Health Insurance Act that established PhilHealth.",
+                memoryTip: "7875 → At age 75-78 → Need HEALTH insurance!",
+                category: "Health Insurance"
+            },
+            {
+                question: "Which law established PhilHealth?",
+                options: ["RA 11223", "RA 7875", "RA 7160", "RA 9502"],
+                correct: 1,
+                explanation: "RA 7875 (amended by RA 10606) established PhilHealth.",
+                memoryTip: "7875 = PHIL-HEALTH coverage!",
+                category: "Health Insurance"
+            },
+            {
+                question: "RA 10606 is an amendment to which law?",
+                options: ["RA 11223", "RA 7875", "RA 9994", "RA 6675"],
+                correct: 1,
+                explanation: "RA 10606 is an amendment to RA 7875 (PhilHealth Act).",
+                memoryTip: "10606 updates 7875 → PhilHealth!",
+                category: "Health Insurance"
+            },
+            {
+                question: "What is RA 7719?",
+                options: ["National Blood Services Act", "Anti-Rabies Act", "Clean Water Act", "Disaster Risk Reduction Act"],
+                correct: 0,
+                explanation: "RA 7719 is the National Blood Services Act.",
+                memoryTip: "7719 → At 77 in 2019 → Need safe BLOOD!",
+                category: "Blood Safety"
+            },
+            {
+                question: "National Blood Services Act is:",
+                options: ["RA 9482", "RA 7719", "RA 9275", "RA 10121"],
+                correct: 1,
+                explanation: "The National Blood Services Act is RA 7719.",
+                memoryTip: "BLOOD = 7719!",
+                category: "Blood Safety"
+            },
+            {
+                question: "Which law prohibits commercial sale of blood?",
+                options: ["RA 7719", "RA 11332", "RA 9482", "PD 856"],
+                correct: 0,
+                explanation: "RA 7719 (Blood Services Act) prohibits commercial sale of blood.",
+                memoryTip: "BLOOD safety = Be Loving, Offer Donation → 7719!",
+                category: "Blood Safety"
+            },
+            {
+                question: "Law on Notifiable Diseases is:",
+                options: ["RA 10152", "RA 11332", "RA 10121", "RA 11223"],
+                correct: 1,
+                explanation: "The Law on Notifiable Diseases is RA 11332.",
+                memoryTip: "NOTIFY = 11332!",
+                category: "Disease Surveillance"
+            },
+            {
+                question: "What is RA 11332?",
+                options: ["COVID-19 Response Act", "Law on Notifiable Diseases", "Universal Health Care Act", "Disease Prevention Act"],
+                correct: 1,
+                explanation: "RA 11332 is the Law on Notifiable Diseases.",
+                memoryTip: "11332 → 1 person, 1 disease, report!",
+                category: "Disease Surveillance"
+            },
+            {
+                question: "Which law requires mandatory reporting of infectious diseases with penalties?",
+                options: ["RA 11332", "PD 856", "RA 10152", "RA 9165"],
+                correct: 0,
+                explanation: "RA 11332 requires mandatory reporting with penalties for non-reporting.",
+                memoryTip: "NOTIFY = Need Official Timely Info → 11332!",
+                category: "Disease Surveillance"
+            },
+            {
+                question: "Senior Citizens Act is:",
+                options: ["RA 7875", "RA 9994", "RA 11223", "RA 7305"],
+                correct: 1,
+                explanation: "The Senior Citizens Act is RA 9994.",
+                memoryTip: "SENIOR = 9994!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "What is RA 9994?",
+                options: ["PWD Act", "Senior Citizens Act", "Universal Health Care Act", "PhilHealth Act"],
+                correct: 1,
+                explanation: "RA 9994 is the Senior Citizens Act.",
+                memoryTip: "9994 → At age 99 → Need SENIOR benefits!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "Which law grants 20% discount and VAT exemption to older adults?",
+                options: ["RA 9994", "RA 7875", "RA 6675", "RA 9502"],
+                correct: 0,
+                explanation: "RA 9994 (Senior Citizens Act) grants these benefits.",
+                memoryTip: "20% DEV → Discount, Exemption, Various programs = 9994!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "Comprehensive Dangerous Drugs Act is:",
+                options: ["RA 9211", "RA 9165", "RA 9482", "RA 10121"],
+                correct: 1,
+                explanation: "The Comprehensive Dangerous Drugs Act is RA 9165.",
+                memoryTip: "DRUGS = 9165!",
+                category: "Substance Control"
+            },
+            {
+                question: "What is RA 9165?",
+                options: ["Tobacco Regulation Act", "Comprehensive Dangerous Drugs Act", "Anti-Rabies Act", "Alcohol Control Act"],
+                correct: 1,
+                explanation: "RA 9165 is the Comprehensive Dangerous Drugs Act of 2002.",
+                memoryTip: "9165 → War on DANGEROUS DRUGS!",
+                category: "Substance Control"
+            },
+            {
+                question: "Which law covers drug prevention, rehabilitation, and control?",
+                options: ["RA 9211", "RA 9165", "RA 9262", "RA 10354"],
+                correct: 1,
+                explanation: "RA 9165 (Dangerous Drugs Act) covers Prevention, Rehabilitation, Control.",
+                memoryTip: "Drug PRC = 9165!",
+                category: "Substance Control"
+            },
+            {
+                question: "Cheaper Medicines Act is:",
+                options: ["RA 6675", "RA 9502", "RA 11223", "RA 7875"],
+                correct: 1,
+                explanation: "The Cheaper Medicines Act is RA 9502.",
+                memoryTip: "CHEAPER = 9502!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "What is RA 9502?",
+                options: ["Generics Act", "Cheaper Medicines Act", "Universal Health Care Act", "PhilHealth Amendment"],
+                correct: 1,
+                explanation: "RA 9502 is the Cheaper Medicines Act.",
+                memoryTip: "9502 → 95% cheaper in 2002!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "Which law strengthens generic competition for affordable medicines?",
+                options: ["RA 6675", "RA 9502", "RA 7875", "RA 9994"],
+                correct: 1,
+                explanation: "RA 9502 (Cheaper Medicines Act) strengthens generic competition.",
+                memoryTip: "CHEAPER = Competition Helps Everyone!",
+                category: "Access to Medicines"
+            },
+            {
+                question: "Violence Against Women and Children Act is:",
+                options: ["RA 10821", "RA 9262", "PD 603", "RA 10666"],
+                correct: 1,
+                explanation: "VAWC is RA 9262.",
+                memoryTip: "VAWC = 9262!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "What is RA 9262?",
+                options: ["Children's Rights Act", "Violence Against Women and Children Act", "Anti-Bullying Act", "Child Protection Act"],
+                correct: 1,
+                explanation: "RA 9262 is the Violence Against Women and Children (VAWC) Act.",
+                memoryTip: "9262 → VIOLENCE must STOP!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "Which law makes nurses mandatory reporters of abuse?",
+                options: ["RA 9262", "PD 603", "RA 10821", "RA 10152"],
+                correct: 0,
+                explanation: "RA 9262 (VAWC) makes nurses mandatory reporters.",
+                memoryTip: "MANDATORY reporters = 9262!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "Which law protects from physical, emotional, sexual, and economic abuse?",
+                options: ["PD 603", "RA 9262", "RA 10821", "RA 7600"],
+                correct: 1,
+                explanation: "RA 9262 (VAWC) protects from PESE abuse.",
+                memoryTip: "VAWC PESE = 9262!",
+                category: "Vulnerable Populations"
+            },
+            {
+                question: "Disaster Risk Reduction and Management Act is:",
+                options: ["RA 10821", "RA 10121", "RA 7160", "RA 11223"],
+                correct: 1,
+                explanation: "The DRRM Act is RA 10121.",
+                memoryTip: "DRRM = 10121!",
+                category: "Emergency Preparedness"
+            },
+            {
+                question: "What is RA 10121?",
+                options: ["Emergency Response Act", "Disaster Risk Reduction and Management Act", "Children's Emergency Relief Act", "National Emergency Act"],
+                correct: 1,
+                explanation: "RA 10121 is the Disaster Risk Reduction and Management Act.",
+                memoryTip: "10121 → DRRM 101 in 21st century!",
+                category: "Emergency Preparedness"
+            },
+            {
+                question: "Which law makes CHN nurses frontline disaster responders?",
+                options: ["RA 10821", "RA 10121", "RA 7305", "RA 11332"],
+                correct: 1,
+                explanation: "RA 10121 (DRRM) designates CHN nurses as frontline responders.",
+                memoryTip: "CHN FIRST responders = 10121!",
+                category: "Emergency Preparedness"
+            },
+            {
+                question: "Which law covers preparedness, response, and rehabilitation?",
+                options: ["RA 10821", "RA 10121", "RA 11332", "RA 7305"],
+                correct: 1,
+                explanation: "RA 10121 (DRRM) covers Preparedness, Response, Rehabilitation.",
+                memoryTip: "Disaster PRR = 10121!",
+                category: "Emergency Preparedness"
+            },
+            {
+                question: "Rooming-in and Breastfeeding Act is:",
+                options: ["RA 10354", "RA 7600", "RA 10152", "RA 7875"],
+                correct: 1,
+                explanation: "The Rooming-in and Breastfeeding Act is RA 7600.",
+                memoryTip: "BREASTFEEDING = 7600!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "What is RA 7600?",
+                options: ["Maternal Health Act", "Rooming-in and Breastfeeding Act", "Infant Nutrition Act", "Child Feeding Act"],
+                correct: 1,
+                explanation: "RA 7600 is the Rooming-in and Breastfeeding Act.",
+                memoryTip: "7600 → Born in '76, year 2000 → BREASTFEEDING!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Which law mandates exclusive breastfeeding and controls formula marketing?",
+                options: ["RA 10354", "RA 7600", "RA 10152", "PD 603"],
+                correct: 1,
+                explanation: "RA 7600 + Milk Code (EO 51) mandates this.",
+                memoryTip: "Breastfeeding REC = Rooming-in, Exclusive, Control!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "What is EO 51?",
+                options: ["Breastfeeding Act", "Milk Code", "Formula Regulation", "Infant Nutrition Code"],
+                correct: 1,
+                explanation: "EO 51 is the Milk Code that controls formula milk marketing.",
+                memoryTip: "EO 51 = MILK code!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Responsible Parenthood and Reproductive Health Law is:",
+                options: ["RA 7600", "RA 10354", "RA 10152", "RA 7875"],
+                correct: 1,
+                explanation: "The RH Law is RA 10354.",
+                memoryTip: "RH Law = 10354!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "What is RA 10354?",
+                options: ["Maternal Health Act", "Responsible Parenthood and Reproductive Health Law", "Family Planning Act", "Women's Health Act"],
+                correct: 1,
+                explanation: "RA 10354 is the Responsible Parenthood and Reproductive Health Law.",
+                memoryTip: "10354 → 10 months pregnancy, 3-5-4 family!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Which law promotes informed choice, sex education, and skilled birth attendance?",
+                options: ["RA 7600", "RA 10354", "RA 10152", "RA 7875"],
+                correct: 1,
+                explanation: "RA 10354 (RH Law) promotes Informed choice, Sex education, Skilled birth.",
+                memoryTip: "RH promotes ISS = 10354!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Which law ensures access to family planning and maternal care?",
+                options: ["RA 7600", "RA 10354", "RA 7875", "RA 10152"],
+                correct: 1,
+                explanation: "RA 10354 (RH Law) ensures Family planning, Maternal care, Reproductive health.",
+                memoryTip: "RH FMR = 10354!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Mandatory Infants and Children Health Immunization Act is:",
+                options: ["RA 10354", "RA 10152", "RA 7600", "RA 10121"],
+                correct: 1,
+                explanation: "The Mandatory Immunization Act is RA 10152.",
+                memoryTip: "IMMUNIZATION = 10152!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "What is RA 10152?",
+                options: ["Child Health Act", "Mandatory Infants and Children Health Immunization Act", "Vaccination Program Act", "EPI Act"],
+                correct: 1,
+                explanation: "RA 10152 is the Mandatory Infants and Children Health Immunization Act.",
+                memoryTip: "10152 → 10 vaccines, 1 child, 5 visits, 2 years!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Which law requires immunization against TB, polio, measles, DPT, and Hep B?",
+                options: ["RA 10354", "RA 10152", "RA 11332", "RA 7600"],
+                correct: 1,
+                explanation: "RA 10152 requires TPM-TDP-H vaccines.",
+                memoryTip: "Mandatory vaccines = 10152!",
+                category: "Maternal & Child Health"
+            },
+            {
+                question: "Children Safety on Motorcycles Act is:",
+                options: ["RA 10821", "RA 10666", "PD 603", "RA 9211"],
+                correct: 1,
+                explanation: "Children Safety on Motorcycles is RA 10666.",
+                memoryTip: "MOTORCYCLE safety = 10666!",
+                category: "Child Safety"
+            },
+            {
+                question: "What is RA 10666?",
+                options: ["Road Safety Act", "Children Safety on Motorcycles Act", "Vehicle Safety Act", "Child Transportation Act"],
+                correct: 1,
+                explanation: "RA 10666 is the Children Safety on Motorcycles Act.",
+                memoryTip: "10666 → Don't be the 'devil' → SAFE motorcycles!",
+                category: "Child Safety"
+            },
+            {
+                question: "Children's Emergency Relief and Protection Act is:",
+                options: ["RA 10121", "RA 10821", "RA 10666", "PD 603"],
+                correct: 1,
+                explanation: "Children's Emergency Relief is RA 10821.",
+                memoryTip: "CHILDREN emergency = 10821!",
+                category: "Child Safety"
+            },
+            {
+                question: "What is RA 10821?",
+                options: ["Disaster Relief Act", "Children's Emergency Relief and Protection Act", "Child Welfare in Disasters Act", "Emergency Response for Children Act"],
+                correct: 1,
+                explanation: "RA 10821 is the Children's Emergency Relief and Protection Act.",
+                memoryTip: "10821 → Call 108 in emergency!",
+                category: "Child Safety"
+            },
+            {
+                question: "Child and Youth Welfare Code is:",
+                options: ["RA 10821", "PD 603", "RA 10666", "RA 9262"],
+                correct: 1,
+                explanation: "The Child and Youth Welfare Code is PD 603.",
+                memoryTip: "CHILD WELFARE = PD 603!",
+                category: "Child Safety"
+            },
+            {
+                question: "What is PD 603?",
+                options: ["Children's Rights Act", "Child and Youth Welfare Code", "Minor Protection Act", "Family Code"],
+                correct: 1,
+                explanation: "PD 603 is the Child and Youth Welfare Code.",
+                memoryTip: "PD 603 → 6 rights for 0-3 year olds and beyond!",
+                category: "Child Safety"
+            },
+            {
+                question: "Which law covers rights, duties, and protection of Filipino children?",
+                options: ["RA 10821", "PD 603", "RA 10666", "RA 9262"],
+                correct: 1,
+                explanation: "PD 603 covers Rights, Duties, Protection of children.",
+                memoryTip: "Child RDP = PD 603!",
+                category: "Child Safety"
+            },
+            {
+                question: "Tobacco Regulation Act is:",
+                options: ["RA 9165", "RA 9211", "RA 8749", "RA 9275"],
+                correct: 1,
+                explanation: "The Tobacco Regulation Act is RA 9211.",
+                memoryTip: "TOBACCO = 9211!",
+                category: "Substance Control"
+            },
+            {
+                question: "What is RA 9211?",
+                options: ["Anti-Smoking Act", "Tobacco Regulation Act", "Clean Air Act", "Dangerous Drugs Act"],
+                correct: 1,
+                explanation: "RA 9211 is the Tobacco Regulation Act of 2003.",
+                memoryTip: "9211 → At age 11 → Too young for TOBACCO!",
+                category: "Substance Control"
+            },
+            {
+                question: "Which law restricts smoking in public places and sales to minors?",
+                options: ["RA 8749", "RA 9211", "RA 9165", "PD 856"],
+                correct: 1,
+                explanation: "RA 9211 restricts Smoking, Ads, Sales to minors.",
+                memoryTip: "Tobacco SAS = 9211!",
+                category: "Substance Control"
+            },
+            {
+                question: "Local Government Code is:",
+                options: ["RA 11223", "RA 7160", "RA 7305", "RA 10121"],
+                correct: 1,
+                explanation: "The Local Government Code is RA 7160.",
+                memoryTip: "LOCAL = 7160!",
+                category: "Health Systems"
+            },
+            {
+                question: "What is RA 7160?",
+                options: ["National Government Act", "Local Government Code", "Barangay Act", "Municipal Code"],
+                correct: 1,
+                explanation: "RA 7160 is the Local Government Code enabling devolution of health services.",
+                memoryTip: "7160 → LOCAL government control!",
+                category: "Health Systems"
+            },
+            {
+                question: "Universal Health Care Act is:",
+                options: ["RA 7875", "RA 11223", "RA 10606", "RA 7160"],
+                correct: 1,
+                explanation: "The Universal Health Care Act is RA 11223.",
+                memoryTip: "UHC = 11223!",
+                category: "Health Systems"
+            },
+            {
+                question: "What is RA 11223?",
+                options: ["PhilHealth Expansion Act", "Universal Health Care Act", "National Health Act", "Health for All Act"],
+                correct: 1,
+                explanation: "RA 11223 is the Universal Health Care Act.",
+                memoryTip: "11223 → 1 for ALL, ALL for 1 → UNIVERSAL!",
+                category: "Health Systems"
+            },
+            {
+                question: "Ecological Solid Waste Management Act is:",
+                options: ["RA 9275", "RA 9003", "PD 856", "RA 8749"],
+                correct: 1,
+                explanation: "Ecological Solid Waste Management is RA 9003.",
+                memoryTip: "WASTE 3R's = 9003!",
+                category: "Environmental Health"
+            },
+            {
+                question: "What is RA 9003?",
+                options: ["Recycling Act", "Ecological Solid Waste Management Act", "Garbage Disposal Act", "Environmental Protection Act"],
+                correct: 1,
+                explanation: "RA 9003 is the Ecological Solid Waste Management Act.",
+                memoryTip: "9003 → In '90, 03 R's → Reduce, Reuse, Recycle!",
+                category: "Environmental Health"
+            },
+            {
+                question: "Clean Water Act is:",
+                options: ["RA 8749", "RA 9275", "PD 856", "RA 9003"],
+                correct: 1,
+                explanation: "The Clean Water Act is RA 9275.",
+                memoryTip: "CLEAN WATER = 9275!",
+                category: "Environmental Health"
+            },
+            {
+                question: "What is RA 9275?",
+                options: ["Safe Drinking Water Act", "Clean Water Act", "Water Supply Act", "Marine Protection Act"],
+                correct: 1,
+                explanation: "RA 9275 is the Clean Water Act.",
+                memoryTip: "9275 → 75% of body is water → CLEAN WATER!",
+                category: "Environmental Health"
+            },
+            {
+                question: "Anti-Rabies Act is:",
+                options: ["RA 7719", "RA 9482", "RA 11332", "RA 9165"],
+                correct: 1,
+                explanation: "The Anti-Rabies Act is RA 9482.",
+                memoryTip: "RABIES prevention = 9482!",
+                category: "Disease Prevention"
+            },
+            {
+                question: "What is RA 9482?",
+                options: ["Animal Welfare Act", "Anti-Rabies Act", "Pet Registration Act", "Dog Bite Prevention Act"],
+                correct: 1,
+                explanation: "RA 9482 is the Anti-Rabies Act.",
+                memoryTip: "9482 → In '94, 82% dog bites → ANTI-RABIES!",
+                category: "Disease Prevention"
+            },
+            {
+                question: "Magna Carta for Public Health Workers is:",
+                options: ["RA 7160", "RA 7305", "RA 7875", "RA 7719"],
+                correct: 1,
+                explanation: "Magna Carta for Public Health Workers is RA 7305.",
+                memoryTip: "MAGNA = 7305!",
+                category: "Health Worker Protection"
+            },
+            {
+                question: "What is RA 7305?",
+                options: ["National Health Insurance Act", "Magna Carta for Public Health Workers", "Sanitation Code of the Philippines", "Local Government Code"],
+                correct: 1,
+                explanation: "RA 7305 is the Magna Carta for Public Health Workers.",
+                memoryTip: "73-05 → SERVE-THREE-O-FIVE → Health workers SERVE → MAGNA benefits!",
+                category: "Health Worker Protection"
+            },
+            // Review questions with mixed definitions
+            {
+                question: "Promotes voluntary blood donation and prohibits commercial sale:",
+                options: ["RA 7719", "RA 9482", "RA 11332", "PD 856"],
+                correct: 0,
+                explanation: "RA 7719 (National Blood Services Act) promotes voluntary donation.",
+                memoryTip: "BLOOD = 7719!",
+                category: "Review"
+            },
+            {
+                question: "Establishes policies to improve air quality and regulate emissions:",
+                options: ["PD 856", "RA 8749", "RA 9003", "RA 9275"],
+                correct: 1,
+                explanation: "RA 8749 (Clean Air Act) regulates air quality and emissions.",
+                memoryTip: "AIR quality = 8749!",
+                category: "Review"
+            },
+            {
+                question: "Governs food sanitation, water supply, waste disposal, and public health safety:",
+                options: ["RA 8749", "PD 856", "RA 9003", "RA 9275"],
+                correct: 1,
+                explanation: "PD 856 (Sanitation Code) governs these public health measures.",
+                memoryTip: "SANITATION = PD 856!",
+                category: "Review"
+            },
+            {
+                question: "Mandates rooming-in, exclusive breastfeeding, and controls formula marketing:",
+                options: ["RA 10354", "RA 7600", "RA 10152", "PD 603"],
+                correct: 1,
+                explanation: "RA 7600 + EO 51 (Milk Code) mandates these breastfeeding protections.",
+                memoryTip: "BREASTFEEDING = 7600!",
+                category: "Review"
+            },
+            {
+                question: "Protects women and children from physical, emotional, sexual, and economic abuse:",
+                options: ["PD 603", "RA 9262", "RA 10821", "RA 10666"],
+                correct: 1,
+                explanation: "RA 9262 (VAWC) protects from PESE abuse.",
+                memoryTip: "VAWC = 9262!",
+                category: "Review"
+            },
+            {
+                question: "Strengthens national and local disaster preparedness, response, and rehabilitation:",
+                options: ["RA 10821", "RA 10121", "RA 7160", "RA 11332"],
+                correct: 1,
+                explanation: "RA 10121 (DRRM Act) strengthens disaster management.",
+                memoryTip: "DRRM = 10121!",
+                category: "Review"
+            },
+            {
+                question: "Ensures public access to affordable essential medicines and strengthens generic competition:",
+                options: ["RA 6675", "RA 9502", "RA 7875", "RA 11223"],
+                correct: 1,
+                explanation: "RA 9502 (Cheaper Medicines Act) ensures affordable medicine access.",
+                memoryTip: "CHEAPER = 9502!",
+                category: "Review"
+            },
+            {
+                question: "Requires mandatory reporting of infectious diseases with penalties for non-reporting:",
+                options: ["RA 11332", "RA 10152", "PD 856", "RA 9165"],
+                correct: 0,
+                explanation: "RA 11332 (Notifiable Diseases) requires mandatory reporting with penalties.",
+                memoryTip: "NOTIFY = 11332!",
+                category: "Review"
+            },
+            {
+                question: "Grants 20% discount, VAT exemption, and health benefits to older adults:",
+                options: ["RA 7875", "RA 9994", "RA 11223", "RA 6675"],
+                correct: 1,
+                explanation: "RA 9994 (Senior Citizens Act) grants these benefits.",
+                memoryTip: "SENIOR = 9994!",
+                category: "Review"
+            }
+        ];
+        
+        // Shuffle questions at the start
+        let quizData = shuffleArray(quizDataBase);
+        
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let currentStreak = 0;
+        let selectedAnswer = null;
+        let isAnswered = false;
+        let masteredLaws = new Set();
+        let currentShuffledOptions = [];
+        
+        const totalQuestions = quizData.length;
+        
+        function displayQuestion() {
+            const container = document.getElementById('quizContainer');
+            const question = quizData[currentQuestionIndex];
+            
+            // Create array of options with their original indices
+            const optionsWithIndices = question.options.map((option, index) => ({
+                text: option,
+                originalIndex: index
+            }));
+            
+            // Shuffle the options
+            currentShuffledOptions = shuffleArray(optionsWithIndices);
+            
+            container.innerHTML = `
+                <div class="quiz-card">
+                    <div class="question-meta">
+                        <span class="question-number">Question ${currentQuestionIndex + 1} of ${totalQuestions}</span>
+                        <div class="question-type">
+                            <span class="type-badge">${question.category}</span>
+                        </div>
+                    </div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+                        ${currentShuffledOptions.map((option, displayIndex) => `
+                            <div class="option" data-original-index="${option.originalIndex}">
+                                <div class="option-letter">${String.fromCharCode(65 + displayIndex)}</div>
+                                <div class="option-text">${option.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="feedback"></div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="submitBtn" disabled>Submit Answer</button>
+                        <button class="btn btn-secondary" id="nextBtn" style="display: none;">Next Question →</button>
+                    </div>
+                </div>
+            `;
+            
+            updateStats();
+            attachEventListeners();
+        }
+        
+        function attachEventListeners() {
+            const options = document.querySelectorAll('.option');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    if (isAnswered) return;
+                    
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedAnswer = parseInt(option.dataset.originalIndex);
+                    submitBtn.disabled = false;
+                });
+            });
+            
+            submitBtn.addEventListener('click', submitAnswer);
+            nextBtn.addEventListener('click', nextQuestion);
+        }
+        
+        function submitAnswer() {
+            if (selectedAnswer === null || isAnswered) return;
+            
+            isAnswered = true;
+            
+            const question = quizData[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            if (selectedAnswer === question.correct) {
+                correctAnswers++;
+                currentStreak++;
+                
+                // Find and mark the correct option
+                options.forEach(opt => {
+                    if (parseInt(opt.dataset.originalIndex) === question.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                masteredLaws.add(question.category);
+                
+                feedback.innerHTML = `
+                    <div class="feedback correct">
+                        <div class="feedback-title">✓ Excellent! Correct Answer!</div>
+                        <div class="feedback-explanation">${question.explanation}</div>
+                        <div class="memory-tip">
+                            <div class="memory-tip-title">💡 Memory Tip</div>
+                            <div class="memory-tip-text">${question.memoryTip}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                incorrectAnswers++;
+                currentStreak = 0;
+                
+                // Mark selected as incorrect and show correct answer
+                options.forEach(opt => {
+                    const originalIndex = parseInt(opt.dataset.originalIndex);
+                    if (originalIndex === selectedAnswer) {
+                        opt.classList.add('incorrect');
+                    }
+                    if (originalIndex === question.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                feedback.innerHTML = `
+                    <div class="feedback incorrect">
+                        <div class="feedback-title">✗ Not Quite Right</div>
+                        <div class="feedback-explanation">
+                            <strong>Correct Answer:</strong> ${question.options[question.correct]}<br><br>
+                            ${question.explanation}
+                        </div>
+                        <div class="memory-tip">
+                            <div class="memory-tip-title">💡 Memory Tip to Remember</div>
+                            <div class="memory-tip-text">${question.memoryTip}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+            updateStats();
+        }
+        
+        function nextQuestion() {
+            isAnswered = false;
+            selectedAnswer = null;
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < totalQuestions) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function updateStats() {
+            const answered = correctAnswers + incorrectAnswers;
+            const accuracy = answered > 0 ? Math.round((correctAnswers / answered) * 100) : 0;
+            const progress = (answered / totalQuestions) * 100;
+            
+            document.getElementById('totalLaws').textContent = totalQuestions;
+            document.getElementById('masteredCount').textContent = masteredLaws.size;
+            document.getElementById('streakCount').textContent = currentStreak;
+            document.getElementById('accuracyPercent').textContent = accuracy + '%';
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function showResults() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            const container = document.getElementById('quizContainer');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            container.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            
+            let performanceMessage = '';
+            let masteryLevel = '';
+            
+            if (percentage >= 95) {
+                performanceMessage = '🏆 Law Master!';
+                masteryLevel = 'Expert Level';
+            } else if (percentage >= 85) {
+                performanceMessage = '🌟 Outstanding!';
+                masteryLevel = 'Advanced';
+            } else if (percentage >= 75) {
+                performanceMessage = '👍 Very Good!';
+                masteryLevel = 'Proficient';
+            } else if (percentage >= 65) {
+                performanceMessage = '📚 Good Progress!';
+                masteryLevel = 'Developing';
+            } else {
+                performanceMessage = '📖 Keep Studying!';
+                masteryLevel = 'Beginner';
+            }
+            
+            resultsContainer.innerHTML = `
+                <div class="results-card">
+                    <h2>${performanceMessage}</h2>
+                    <div class="score-circle">
+                        <div class="score-display">${percentage}%</div>
+                    </div>
+                    
+                    <div class="mastery-level">
+                        <h3>Mastery Level: ${masteryLevel}</h3>
+                        <div class="mastery-bar">
+                            <div class="mastery-fill" style="width: ${percentage}%">${percentage}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-stats">
+                        <div class="result-stat-card">
+                            <div class="result-stat-value">${correctAnswers}</div>
+                            <div class="result-stat-label">Correct</div>
+                        </div>
+                        <div class="result-stat-card">
+                            <div class="result-stat-value">${incorrectAnswers}</div>
+                            <div class="result-stat-label">Incorrect</div>
+                        </div>
+                        <div class="result-stat-card">
+                            <div class="result-stat-value">${totalQuestions}</div>
+                            <div class="result-stat-label">Total Questions</div>
+                        </div>
+                        <div class="result-stat-card">
+                            <div class="result-stat-value">${masteredLaws.size}</div>
+                            <div class="result-stat-label">Categories Mastered</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="location.reload()">📚 Study Again</button>
+                </div>
+            `;
+        }
+        
+        // Initialize
+        document.getElementById('totalLaws').textContent = totalQuestions;
+        displayQuestion();
+    </script>
+</body>
+</html>
